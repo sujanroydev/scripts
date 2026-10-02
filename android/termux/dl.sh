@@ -15,8 +15,8 @@ dl() {
     if [ -z "$format" ] || [ -z "$url" ]; then
         echo "Usage: dl [format] [URL or search]"
         echo
-        echo "Video: v 240p 360p 480p 720p 1080p 1440p"
-        echo "Audio: a 64k 128k 256k"
+        echo "Video: v _p 240p 360p 480p 720p 1080p 1440p"
+        echo "Audio: a _k 64k 128k 256k"
         return 1
     fi
 
@@ -27,7 +27,7 @@ dl() {
     fi
 
     case "$format" in
-        240p|360p|480p|720p|1080p|1440p)
+        _p|240p|360p|480p|720p|1080p|1440p)
             local height="${format%p}"
 
             if $is_url; then
@@ -38,6 +38,15 @@ dl() {
 
             mkdir -p "/storage/emulated/0/Movies"
 
+            if [ "$format" = "_p" ]; then
+                yt-dlp \
+                    -f "bestvideo+bestaudio/best" \
+                    --merge-output-format mp4 \
+                    -o "$path" \
+                    "$url"
+                return $?
+            fi
+
             yt-dlp \
                 -f "bestvideo[height<=${height}][vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[height<=${height}]+bestaudio/best[height<=${height}]" \
                 --merge-output-format mp4 \
@@ -45,7 +54,7 @@ dl() {
                 "$url"
             ;;
 
-        64k|128k|256k)
+        _k|64k|128k|256k)
             if $is_url; then
                 local path="/storage/emulated/0/Music/%(playlist_title|Songs)s/%(playlist_index&{} - |)s%(title)s.%(ext)s"
             else
@@ -66,8 +75,8 @@ dl() {
         *)
             echo "Invalid format: $format"
             echo
-            echo "Video: v 240p 360p 480p 720p 1080p 1440p"
-            echo "Audio: a 64k 128k 256k"
+            echo "Video: v _p 240p 360p 480p 720p 1080p 1440p"
+            echo "Audio: a _k 64k 128k 256k"
             return 1
             ;;
     esac
