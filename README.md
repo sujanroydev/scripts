@@ -93,8 +93,7 @@ pip install -U yt-dlp
 
 mkdir -p ~/scripts
 
-curl -L https://raw.githubusercontent.com/sujanroydev/scripts/main/android/termux/dl.sh \
-    -o ~/scripts/dl.sh
+curl -L https://raw.githubusercontent.com/sujanroydev/scripts/main/android/termux/dl.sh -o ~/scripts/dl.sh
 
 source ~/scripts/dl.sh
 ```
