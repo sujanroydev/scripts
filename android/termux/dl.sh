@@ -63,6 +63,17 @@ dl() {
 
             mkdir -p "/storage/emulated/0/Music"
 
+            if [ "$format" = "_k" ]; then
+                yt-dlp \
+                    -f "bestaudio" \
+                    -x \
+                    --audio-format mp3 \
+                    --audio-quality 0 \
+                    -o "$path" \
+                    "$url"
+                return $?
+            fi
+
             yt-dlp \
                 -f "bestaudio" \
                 -x \
