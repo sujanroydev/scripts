@@ -1,39 +1,82 @@
 # Windows
 
-Windows-specific scripts and utilities for use with **PowerShell**.
+Windows scripts and utilities for **PowerShell**.
 
-## Contents
+## Download Utility
 
-```text
-windows/
-└── powershell/
-    └── dl.ps1
-```
+`dl.ps1` provides a simple `dl` command for downloading videos and audio using `yt-dlp`.
 
-### PowerShell
+### Features
 
-`powershell/dl.ps1` provides a `dl` PowerShell function for downloading videos and audio using [`yt-dlp`](https://github.com/yt-dlp/yt-dlp).
+- YouTube URLs and search queries
+- Video downloads from 240p to 1440p
+- Best-quality video with `_p`
+- MP3 audio from 64k to 256k
+- Best-quality audio with `_k`
+- Playlist support
+- Automatic output organization
 
-It supports:
+## Setup
 
-- YouTube URLs
-- YouTube search queries
-- Video downloads up to a specified resolution
-- Best-quality video downloads
-- MP3 audio downloads
-- Configurable audio bitrates
-- Playlist downloads
-- Separate video and music directories
+### 1. Install PowerShell
 
-## Usage
+Windows 10 and Windows 11 already include PowerShell.
 
-Load the script in PowerShell:
+Open **PowerShell** and continue with the steps below.
+
+### 2. Install yt-dlp
+
+If you have `winget`:
 
 ```powershell
-. .\windows\powershell\dl.ps1
+winget install yt-dlp
 ```
 
-Then use:
+Verify:
+
+```powershell
+yt-dlp --version
+```
+
+### 3. Install FFmpeg
+
+```powershell
+winget install Gyan.FFmpeg
+```
+
+Verify:
+
+```powershell
+ffmpeg -version
+```
+
+### 4. Download the Script
+
+You don't need Git.
+
+Create a scripts directory:
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$HOME\scripts" | Out-Null
+```
+
+Download the latest script:
+
+```powershell
+Invoke-WebRequest `
+    -Uri "https://raw.githubusercontent.com/sujanroydev/scripts/main/windows/powershell/dl.ps1" `
+    -OutFile "$HOME\scripts\dl.ps1"
+```
+
+### 5. Load the Script
+
+```powershell
+. "$HOME\scripts\dl.ps1"
+```
+
+The `dl` command is now ready to use.
+
+## Usage
 
 ```powershell
 dl <format> <URL or search>
@@ -45,164 +88,138 @@ dl <format> <URL or search>
 dl v "https://youtube.com/watch?v=..."
 dl _p "https://youtube.com/watch?v=..."
 dl 360p "https://youtube.com/watch?v=..."
-dl 720p "https://youtube.com/watch?v=..."
+dl 720p "lofi music"
 dl 1080p "https://youtube.com/watch?v=..."
 ```
 
-`v` is an alias for `360p`.
-
-`_p` downloads the best available video quality.
-
-Supported video formats:
-
-```text
-_p
-240p
-360p
-480p
-720p
-1080p
-1440p
-```
+| Format  | Description            |
+| ------- | ---------------------- |
+| `v`     | 360p                   |
+| `_p`    | Best available quality |
+| `240p`  | Up to 240p             |
+| `360p`  | Up to 360p             |
+| `480p`  | Up to 480p             |
+| `720p`  | Up to 720p             |
+| `1080p` | Up to 1080p            |
+| `1440p` | Up to 1440p            |
 
 ### Audio
 
 ```powershell
 dl a "https://youtube.com/watch?v=..."
 dl _k "https://youtube.com/watch?v=..."
-dl 64k "https://youtube.com/watch?v=..."
+dl 64k "some song"
 dl 128k "https://youtube.com/watch?v=..."
 dl 256k "https://youtube.com/watch?v=..."
 ```
 
-`a` is an alias for `128k`.
+| Format | Description                  |
+| ------ | ---------------------------- |
+| `a`    | 128 kbps                     |
+| `_k`   | Best available audio quality |
+| `64k`  | 64 kbps                      |
+| `128k` | 128 kbps                     |
+| `256k` | 256 kbps                     |
 
-`_k` downloads the best available audio quality and converts it to MP3.
+## Search
 
-### Search
-
-A URL is not required. A search query can be provided instead:
+You can use a search query instead of a URL:
 
 ```powershell
-dl 720p "lofi music"
-dl 128k "some song"
+dl 720p "javascript tutorial"
+dl 128k "song name"
 ```
 
-The script uses `ytsearch1:` to download the first matching result.
+The first YouTube search result is downloaded.
 
 ## Output
 
-Videos are stored in:
+Videos are saved to:
 
 ```text
 D:\Videos\
 ```
 
-Audio is stored in:
+Audio is saved to:
 
 ```text
 D:\Music\
 ```
 
-For direct URLs, playlist downloads are organized using the playlist title:
+Playlists are automatically organized into folders using their playlist name.
 
-```text
-D:\Videos\
-└── Playlist Name\
-    ├── 1 - Video 1.mp4
-    ├── 2 - Video 2.mp4
-    └── ...
-```
+## Make `dl` Permanent
 
-For search queries:
+By default, `dl` is available only for the current PowerShell session.
 
-```text
-D:\Videos\
-└── Downloads\
-    └── Video.mp4
-```
-
-Audio follows the same structure:
-
-```text
-D:\Music\
-├── Playlist Name\
-│   ├── 1 - Song 1.mp3
-│   └── ...
-└── Songs\
-    └── Song.mp3
-```
-
-## Requirements
-
-Install **yt-dlp** and **FFmpeg**.
-
-### yt-dlp
-
-If Python is installed:
+To load it automatically whenever PowerShell starts, add the following to your PowerShell profile:
 
 ```powershell
-py -m pip install -U yt-dlp
+Add-Content -Path $PROFILE -Value '. "$HOME\scripts\dl.ps1"'
 ```
 
-Verify:
+If the profile directory does not exist, PowerShell can create it automatically:
 
 ```powershell
-yt-dlp --version
+New-Item -ItemType File -Path $PROFILE -Force | Out-Null
+Add-Content -Path $PROFILE -Value '. "$HOME\scripts\dl.ps1"'
 ```
 
-### FFmpeg
-
-Verify that FFmpeg is available:
+Restart PowerShell or reload the profile:
 
 ```powershell
-ffmpeg -version
+. $PROFILE
 ```
 
-If it is not installed, install it using your preferred Windows package manager or add an existing FFmpeg installation to `PATH`.
+Now `dl` will be available whenever you open PowerShell.
 
-## Installation
+## Update
 
-Clone the repository:
+Download the latest version of the script:
 
 ```powershell
-git clone <repository-url>
-cd <repository>
+Invoke-WebRequest `
+    -Uri "https://raw.githubusercontent.com/sujanroydev/scripts/main/windows/powershell/dl.ps1" `
+    -OutFile "$HOME\scripts\dl.ps1"
 ```
 
-Load the PowerShell script:
+Reload it:
 
 ```powershell
-. .\windows\powershell\dl.ps1
+. "$HOME\scripts\dl.ps1"
 ```
 
-The leading `.` is important because the script defines a function in the current PowerShell session.
-
-### Load Automatically
-
-To make `dl` available automatically in new PowerShell sessions, add the following to your PowerShell profile:
+Update `yt-dlp`:
 
 ```powershell
-. "C:\path\to\windows\powershell\dl.ps1"
+winget upgrade yt-dlp
 ```
 
-Check your profile location with:
+Update FFmpeg:
 
 ```powershell
-$PROFILE
+winget upgrade Gyan.FFmpeg
 ```
 
-If the profile does not exist:
+## Quick Setup
+
+If you already have PowerShell and `winget`, run:
 
 ```powershell
-New-Item -ItemType File -Path $PROFILE -Force
+winget install yt-dlp
+winget install Gyan.FFmpeg
+
+New-Item -ItemType Directory -Force -Path "$HOME\scripts" | Out-Null
+
+Invoke-WebRequest `
+    -Uri "https://raw.githubusercontent.com/sujanroydev/scripts/main/windows/powershell/dl.ps1" `
+    -OutFile "$HOME\scripts\dl.ps1"
+
+. "$HOME\scripts\dl.ps1"
 ```
 
-## Notes
+Then:
 
-- Video downloads are merged into MP4.
-- Video selection prefers H.264 video and AAC audio for compatibility when available.
-- Audio is converted to MP3 using FFmpeg.
-- `_p` and `_k` represent best available video and audio quality respectively.
-- The script creates the required output directories automatically.
-- Search downloads use the first YouTube search result.
+```powershell
+dl 720p "your video"
+```
