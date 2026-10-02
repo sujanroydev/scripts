@@ -13,6 +13,15 @@ function dl {
         "a" { $Format = "128k" }
     }
 
+    # Validate input
+    if ([string]::IsNullOrWhiteSpace($Format) -or [string]::IsNullOrWhiteSpace($Url)) {
+        Write-Host "Usage: dl [format] [URL or search]"
+        Write-Host ""
+        Write-Host "Video: v _p 240p 360p 480p 720p 1080p 1440p"
+        Write-Host "Audio: a _k 64k 128k 256k"
+        return
+    }
+
     # Track whether the input was a direct URL
     $IsUrl = $Url -match '^https?://'
 
@@ -23,9 +32,7 @@ function dl {
 
     switch -Regex ($Format) {
 
-        '^(240p|360p|480p|720p|1080p|1440p)$' {
-            $height = $Format -replace 'p$', ''
-
+        '^(_p|240p|360p|480p|720p|1080p|1440p)$' {
             $outputDir = "D:\Videos"
             New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 
@@ -36,16 +43,30 @@ function dl {
                 $outputPath = "$outputDir\Downloads\%(title)s.%(ext)s"
             }
 
+            # Best available video quality
+            if ($Format -eq "_p") {
+                yt-dlp `
+                    -f "bestvideo+bestaudio/best" `
+                    --merge-output-format mp4 `
+                    -o "$outputPath" `
+                    "$Url"
+
+                return $LASTEXITCODE
+            }
+
+            # Fixed video quality
+            $height = $Format -replace 'p$', ''
+
             yt-dlp `
                 -f "bestvideo[height<=$height][vcodec^=avc1]+bestaudio[acodec^=mp4a]/bestvideo[height<=$height]+bestaudio/best[height<=$height]" `
                 --merge-output-format mp4 `
                 -o "$outputPath" `
                 "$Url"
 
-            break
+            return $LASTEXITCODE
         }
 
-        '^(64k|128k|256k)$' {
+        '^(_k|64k|128k|256k)$' {
             $outputDir = "D:\Music"
             New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 
@@ -56,6 +77,20 @@ function dl {
                 $outputPath = "$outputDir\Songs\%(title)s.%(ext)s"
             }
 
+            # Best MP3 quality
+            if ($Format -eq "_k") {
+                yt-dlp `
+                    -f "bestaudio" `
+                    -x `
+                    --audio-format mp3 `
+                    --audio-quality 0 `
+                    -o "$outputPath" `
+                    "$Url"
+
+                return $LASTEXITCODE
+            }
+
+            # Fixed audio bitrate
             yt-dlp `
                 -f "bestaudio" `
                 -x `
@@ -64,15 +99,15 @@ function dl {
                 -o "$outputPath" `
                 "$Url"
 
-            break
+            return $LASTEXITCODE
         }
 
         default {
             Write-Host "Invalid format: $Format"
             Write-Host ""
-            Write-Host "Video: v 240p 360p 480p 720p 1080p 1440p"
-            Write-Host "Audio: a 64k 128k 256k"
-            return
+            Write-Host "Video: v _p 240p 360p 480p 720p 1080p 1440p"
+            Write-Host "Audio: a _k 64k 128k 256k"
+            return 1
         }
     }
 }
