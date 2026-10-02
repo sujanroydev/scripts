@@ -1,39 +1,68 @@
 # Android
 
-Android-specific scripts and utilities for use with **Termux**.
+Android scripts and utilities for **Termux**.
 
-## Contents
+## Download Utility
 
-```text
-android/
-└── termux/
-    └── dl.sh
-```
+`dl.sh` provides a simple `dl` command for downloading videos and audio using `yt-dlp`.
 
-### Termux
+### Features
 
-`termux/dl.sh` provides a `dl` Bash function for downloading videos and audio using [`yt-dlp`](https://github.com/yt-dlp/yt-dlp).
+- YouTube URLs and search queries
+- Video downloads from 240p to 1440p
+- Best-quality video with `_p`
+- MP3 audio from 64k to 256k
+- Best-quality audio with `_k`
+- Playlist support
+- Automatic output organization
 
-It supports:
+## Setup
 
-- YouTube URLs
-- YouTube search queries
-- Video downloads up to a specified resolution
-- Best-quality video downloads
-- MP3 audio downloads
-- Configurable audio bitrates
-- Playlist downloads
-- Separate video and music directories
+### 1. Install Termux
 
-## Usage
+Install Termux from **F-Droid** or the official GitHub releases.
 
-Load the script in Termux:
+Then open Termux and run:
 
 ```bash
-source termux/dl.sh
+pkg update -y
+pkg install -y python ffmpeg curl
 ```
 
-Then use:
+### 2. Allow Storage Access
+
+Run:
+
+```bash
+termux-setup-storage
+```
+
+Tap **Allow** when Android asks for permission.
+
+### 3. Install yt-dlp
+
+```bash
+pip install -U yt-dlp
+```
+
+### 4. Download the Script
+
+You don't need Git.
+
+```bash
+mkdir -p ~/scripts
+curl -L https://raw.githubusercontent.com/sujanroydev/scripts/main/android/termux/dl.sh -o ~/scripts/dl.sh
+```
+
+### 5. Load the Script
+
+```bash
+source ~/scripts/dl.sh
+```
+
+The `dl` command is now ready to use.
+
+## Usage
 
 ```bash
 dl <format> <URL or search>
@@ -45,136 +74,116 @@ dl <format> <URL or search>
 dl v "https://youtube.com/watch?v=..."
 dl _p "https://youtube.com/watch?v=..."
 dl 360p "https://youtube.com/watch?v=..."
-dl 720p "https://youtube.com/watch?v=..."
+dl 720p "lofi music"
 dl 1080p "https://youtube.com/watch?v=..."
 ```
 
-`v` is an alias for `360p`.
-
-`_p` downloads the best available video quality.
-
-Supported video formats:
-
-```text
-_p
-240p
-360p
-480p
-720p
-1080p
-1440p
-```
+| Format  | Description            |
+| ------- | ---------------------- |
+| `v`     | 360p                   |
+| `_p`    | Best available quality |
+| `240p`  | Up to 240p             |
+| `360p`  | Up to 360p             |
+| `480p`  | Up to 480p             |
+| `720p`  | Up to 720p             |
+| `1080p` | Up to 1080p            |
+| `1440p` | Up to 1440p            |
 
 ### Audio
 
 ```bash
 dl a "https://youtube.com/watch?v=..."
 dl _k "https://youtube.com/watch?v=..."
-dl 64k "https://youtube.com/watch?v=..."
+dl 64k "some song"
 dl 128k "https://youtube.com/watch?v=..."
 dl 256k "https://youtube.com/watch?v=..."
 ```
 
-`a` is an alias for `128k`.
+| Format | Description                  |
+| ------ | ---------------------------- |
+| `a`    | 128 kbps                     |
+| `_k`   | Best available audio quality |
+| `64k`  | 64 kbps                      |
+| `128k` | 128 kbps                     |
+| `256k` | 256 kbps                     |
 
-`_k` downloads the best available audio quality and converts it to MP3.
+## Search
 
-### Search
-
-A URL is not required. A search query can be provided instead:
+You can use a search query instead of a URL:
 
 ```bash
-dl 720p "lofi music"
-dl 128k "some song"
+dl 720p "javascript tutorial"
+dl 128k "song name"
 ```
 
-The script uses `ytsearch1:` to download the first matching result.
+The first YouTube search result is downloaded.
 
 ## Output
 
-Videos are stored in:
+Videos are saved to:
 
 ```text
 /storage/emulated/0/Movies/
 ```
 
-Audio is stored in:
+Audio is saved to:
 
 ```text
 /storage/emulated/0/Music/
 ```
 
-For direct URLs, playlist downloads are organized using the playlist title:
+Playlists are automatically organized into folders using their playlist name.
 
-```text
-Movies/
-└── Playlist Name/
-    ├── 1 - Video 1.mp4
-    ├── 2 - Video 2.mp4
-    └── ...
-```
+## Make `dl` Permanent
 
-For search queries:
+By default, `dl` is available only for the current Termux session.
 
-```text
-Movies/
-└── Videos/
-    └── Video.mp4
-```
-
-Audio follows the same structure:
-
-```text
-Music/
-├── Playlist Name/
-│   ├── 1 - Song 1.mp3
-│   └── ...
-└── Songs/
-    └── Song.mp3
-```
-
-## Requirements
-
-Install `yt-dlp` and FFmpeg in Termux:
+To load it automatically every time Termux starts:
 
 ```bash
-pkg update
-pkg install python ffmpeg
+echo 'source ~/scripts/dl.sh' >> ~/.bashrc
+```
+
+Reload the shell:
+
+```bash
+source ~/.bashrc
+```
+
+Now `dl` will be available whenever you open Termux.
+
+## Update
+
+To download the latest version of the script:
+
+```bash
+curl -L https://raw.githubusercontent.com/sujanroydev/scripts/main/android/termux/dl.sh -o ~/scripts/dl.sh
+
+source ~/scripts/dl.sh
+```
+
+Update `yt-dlp` separately:
+
+```bash
 pip install -U yt-dlp
 ```
 
-Allow Termux to access Android storage:
+## Quick Setup
+
+If you already have Termux installed, you can set everything up with:
 
 ```bash
+pkg update -y
+pkg install -y python ffmpeg curl
 termux-setup-storage
+pip install -U yt-dlp
+mkdir -p ~/scripts
+curl -L https://raw.githubusercontent.com/sujanroydev/scripts/main/android/termux/dl.sh -o ~/scripts/dl.sh
+source ~/scripts/dl.sh
 ```
 
-## Installation
-
-Clone the repository and source the script:
+Then:
 
 ```bash
-git clone <repository-url>
-cd <repository>/android/termux
-source dl.sh
+dl 720p "your video"
 ```
-
-To make `dl` available automatically in new Termux sessions, source the script from:
-
-```bash
-~/.bashrc
-```
-
-For example:
-
-```bash
-source ~/path/to/android/termux/dl.sh
-```
-
-## Notes
-
-- Video downloads are merged into MP4.
-- Video selection prefers H.264 video and AAC audio for compatibility when available.
-- Audio is converted to MP3 using FFmpeg.
-- `_p` and `_k` represent best available video and audio quality respectively.
-- The script creates the required Android storage directories automatically.
