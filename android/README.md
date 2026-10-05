@@ -57,7 +57,8 @@ curl -L https://raw.githubusercontent.com/sujanroydev/scripts/main/android/termu
 ### 5. Load the Script
 
 ```bash
-source ~/scripts/dl.sh
+echo 'source ~/scripts/dl.sh' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 The `dl` command is now ready to use.
