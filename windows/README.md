@@ -68,10 +68,19 @@ Invoke-WebRequest `
     -OutFile "$HOME\scripts\dl.ps1"
 ```
 
-### 5. Load the Script
+### 5. Load the Script Permanently
+
+Add the script to your PowerShell profile so it loads automatically whenever you open PowerShell:
 
 ```powershell
-. "$HOME\scripts\dl.ps1"
+New-Item -ItemType File -Path $PROFILE -Force
+Add-Content -Path $PROFILE -Value '. "$HOME\scripts\dl.ps1"'
+```
+
+Then reload your profile:
+
+```powershell
+. $PROFILE
 ```
 
 The `dl` command is now ready to use.
