@@ -39,13 +39,14 @@ ffmpeg -version
 ```bash
 mkdir -p ~/.scripts
 
-curl -L https://raw.githubusercontent.com/sujanroydev/scripts/main/linux/dl.sh \
-    -o ~/.scripts/dl.sh
+curl -L https://raw.githubusercontent.com/sujanroydev/scripts/main/linux/terminal/dl.sh -o ~/.scripts/dl.sh
 ```
 
 ### 3. Load the Script
 
 ```bash
+grep -qxF '[ -f "$HOME/.scripts/dl.sh" ] && source "$HOME/.scripts/dl.sh"' ~/.bashrc || \
+echo '[ -f "$HOME/.scripts/dl.sh" ] && source "$HOME/.scripts/dl.sh"' >> ~/.bashrc
 source ~/.scripts/dl.sh
 ```
 
