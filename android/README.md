@@ -66,7 +66,7 @@ The `dl` command is now ready to use.
 ## Usage
 
 ```bash
-dl <format> <URL or search>
+dl <format> <URL or search> <custom folder>
 ```
 
 ### Video
@@ -76,7 +76,7 @@ dl v "https://youtube.com/watch?v=..."
 dl _p "https://youtube.com/watch?v=..."
 dl 360p "https://youtube.com/watch?v=..."
 dl 720p "lofi music"
-dl 1080p "https://youtube.com/watch?v=..."
+dl 1080p "https://youtube.com/watch?v=..." Movies
 ```
 
 | Format  | Description            |
@@ -124,7 +124,7 @@ The first YouTube search result is downloaded.
 Videos are saved to:
 
 ```text
-/storage/emulated/0/Movies/
+/storage/emulated/0/Videos/
 ```
 
 Audio is saved to:

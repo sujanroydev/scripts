@@ -1,6 +1,7 @@
 dl() {
     local format="$1"
     local url="$2"
+    local dir="$3"
     local is_url=false
 
     case "$format" in
@@ -26,17 +27,19 @@ dl() {
         url="ytsearch1:$url"
     fi
 
+    if [[ -z "$dir" ]]; then
+        dir="Downloads"
+    fi
+
     case "$format" in
         _p|240p|360p|480p|720p|1080p|1440p)
             local height="${format%p}"
 
             if $is_url; then
-                local path="/storage/emulated/0/Movies/%(playlist_title|Videos)s/%(playlist_index&{} - |)s%(title)s.%(ext)s"
+                local path="/storage/emulated/0/Videos/%(playlist_title|$dir)s/%(playlist_index&{} - |)s%(title)s.%(ext)s"
             else
-                local path="/storage/emulated/0/Movies/Videos/%(title)s.%(ext)s"
+                local path="/storage/emulated/0/Videos/$dir/%(title)s.%(ext)s"
             fi
-
-            mkdir -p "/storage/emulated/0/Movies"
 
             if [ "$format" = "_p" ]; then
                 yt-dlp \
@@ -56,12 +59,10 @@ dl() {
 
         _k|64k|128k|256k)
             if $is_url; then
-                local path="/storage/emulated/0/Music/%(playlist_title|Songs)s/%(playlist_index&{} - |)s%(title)s.%(ext)s"
+                local path="/storage/emulated/0/Music/%(playlist_title|$dir)s/%(playlist_index&{} - |)s%(title)s.%(ext)s"
             else
-                local path="/storage/emulated/0/Music/Songs/%(title)s.%(ext)s"
+                local path="/storage/emulated/0/Music/$dir/%(title)s.%(ext)s"
             fi
-
-            mkdir -p "/storage/emulated/0/Music"
 
             if [ "$format" = "_k" ]; then
                 yt-dlp \
